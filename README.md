@@ -1,2 +1,3 @@
 # R_Exercise-BasicSetup
-Very basic setup to work with Rstudio and github.
+Some elementary code to confirm basic setup of Rstudio and github.
+
