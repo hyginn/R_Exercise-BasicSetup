@@ -11,6 +11,7 @@
 #
 # ToDo:
 # Notes:
+# 
 # ==============================================================================
 
 setwd("<your/project/directory>")
@@ -34,14 +35,26 @@ if (!require(RUnit, quietly=TRUE)) {
 # Define functions or source external files
 source("<myUtilityFunctionsScript.R>")
 
-
+myFunction <- function(a, b=1) {
+	# Purpose:
+	#     Describe ...
+	# Parameters:
+	#     a: ...
+	#     b: ...
+	# Value:
+	#     result: ...
+	
+	# code ...
+	
+	return(result)
+}
 
 
 
 # ====  PROCESS  ===============================================================
 # Enter the step-by-step process of your project here. Strive to write your
-# code so that you can simply run this file and re-create all intermediate
-# results.
+# code so that you can simply run this entire file and re-create all
+# intermediate results.
 
 
 
