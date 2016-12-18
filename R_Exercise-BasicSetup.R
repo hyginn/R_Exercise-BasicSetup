@@ -2,11 +2,15 @@
 #
 # Purpose: Configure and verify the basic setup of R projects
 #
-# Version: 0.1
+# Note:    This project lives on Github:
+#          https://github.com/hyginn/R_Exercise-BasicSetup
 #
-# Date:    2016  05  15
+# Version: 0.2
+#
+# Date:    2016  12
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 0.2    Additions to intergate with tutorial
 # V 0.1    First code
 #
 # TODO:
@@ -14,6 +18,12 @@
 #
 # == TEST YOUR SETUP ======================================
 #
+
+#  BRAVA! You have successfully loaded the project file from GitHub.
+
+# Now go through the tasks below, then return to the Wiki tutorial. But keep
+# RStudio open so you can continue to use it in the tutorial.
+
 
 # ==== Execute some code
 #  Execute code by typing <cmd><enter>. When nothing is
@@ -23,13 +33,15 @@
 #  only the core of a nested expression.
 
 
+
+
 # ==== Load a package
 
 
-# ==== Change some code
+# ==== Change some code and save the change
 
 
-# ==== Quit, and restart whwre you left off
+# ==== Quit, and restart where you left off
 
 
 
