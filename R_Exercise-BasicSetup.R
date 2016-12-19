@@ -81,13 +81,13 @@
 
 FibPrev <- 1
 FibCurr <- 1
-for (i in 1:20) {
-    print(FibCurr / FibPrev, digits = 10)
+for (i in 1:35) {
+    print(FibCurr / FibPrev, digits = 17)
     tmp <- FibCurr
     FibCurr <- FibPrev + FibCurr
     FibPrev <- tmp
 }
-print((1 + sqrt(5)) / 2, digits = 10)
+print((1 + sqrt(5)) / 2, digits = 17)   # The real Golden Ratio (approximately)
 
 # - But it's also really useful to be able to select _less_ than one line of
 #   code. For example, this allows us to analyze complex, nested R expressions
