@@ -63,6 +63,11 @@
 #       [1] 1.618034
 #
 
+# Another way to access previously typed code is through the History tab in the
+# upper-right pane. Scroll to find a line that you want to execute or edit,
+# double-click it, and it will appear in the Console. Try this.
+
+
 # You can ALSO execute code by selecting and pressing <command><enter> (or
 # <ctrl><enter> on Windows). This passes code from the Script Pane to the
 # console and executes it automatically. This is very convenient - in fact, this
@@ -74,7 +79,7 @@
 #  - This is the same as if you would have selected an entire line.
 
 #  - If you select more than one line, you can execute an entire block of code
-#    at once. Try this: select the block of code below (lines 82 to 90),
+#    at once. Try this: select the block of code below (lines 87 to 95),
 #    and hit <command><enter> to execute it. The code calculates successive
 #    approximations of the Golden Ratio from Fibonacci numbers, and then prints
 #    the "true" value.
