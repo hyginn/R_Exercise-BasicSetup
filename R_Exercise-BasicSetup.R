@@ -142,13 +142,36 @@ abline(h = 0, col = "#E6EEFF")               # ... and horizontal line
 
 # Plot another beautiful spiral for good measure.
 
+# ==== Typing shortcuts and autocomplete =======================================
+
+# RStudio's editor has a number of useful shortcuts and aids. Try them.
+#
+#   - Typing an opening parenthesis automatically types the closing parenthesis.
+#   - Selecting text and typing a quotation mark quotes the text. This also
+#     works with single quotation marks, parentheses, square brackets
+#     and curly braces.
+#
+#   - Typing a newline character automatically indents the following line.
+#
+#   - Typing a newline inside a comment automatically prefixes the line
+#     with a comment character.
+#
+#   - Typing the first three letters of a variable or function name lists
+#     possible choices to autocomplete. Use the arrow keys to select, hit
+#     <enter> or <tab> to execute. Note that this is not case sensitive.
+#     Autocomplete is therefore especially useful if you are not sure about
+#     the correct case. Try it: type  Tur  and you should get the variable
+#     "turns" selected.
+
 # Review: - The layout of the Panes
 #         - Typing code
 #         - Editing code in the Console, using the arrow keys
+#         - Retrieving code via the History tab
 #         - Selecting code in the Script Pane and executing it
 #           with <command><enter>
 #         - Editing code in the script and saving the change
 #         - Quitting RStudio and restarting a recent project.
+#         - Some typing shortcuts
 
 # Finally, return to the tutorial Wiki page.
 
