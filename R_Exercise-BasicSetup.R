@@ -63,19 +63,19 @@
 #       [1] 1.618034
 #
 
-# You can ALSO execute code by selecting and pressing <cmd><enter>. This passes
-# code from the Script Pane to the console and executes it automatically. This
-# is very convenient - in fact, this is the preferred way to work with lengthy
-# scripts. There are several variants:
+# You can ALSO execute code by selecting and pressing <command><enter> (or
+# <ctrl><enter> on Windows). This passes code from the Script Pane to the
+# console and executes it automatically. This is very convenient - in fact, this
+# is the preferred way to work with lengthy scripts. There are several variants:
 
-#  - When nothing is selected in the Script Pane, pressing <cmd><enter> will
+#  - When nothing is selected in the Script Pane, pressing <command><enter> will
 #    execute the current line and move the cursor to the next line. You can
 #    "walk" through code line by line in this way.
 #  - This is the same as if you would have selected an entire line.
 
 #  - If you select more than one line, you can execute an entire block of code
 #    at once. Try this: select the block of code below (lines 82 to 90),
-#    and hit <cmd><enter> to execute it. The code calculates successive
+#    and hit <command><enter> to execute it. The code calculates successive
 #    approximations of the Golden Ratio from Fibonacci numbers, and then prints
 #    the "true" value.
 
@@ -140,7 +140,8 @@ abline(h = 0, col = "#E6EEFF")               # ... and horizontal line
 # Review: - The layout of the Panes
 #         - Typing code
 #         - Editing code in the Console, using the arrow keys
-#         - Selecting code in the Script Pane and executing it with <cmd><enter>
+#         - Selecting code in the Script Pane and executing it
+#           with <command><enter>
 #         - Editing code in the script and saving the change
 #         - Quitting RStudio and restarting a recent project.
 
