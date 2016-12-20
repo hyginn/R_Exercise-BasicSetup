@@ -99,6 +99,20 @@ print((1 + sqrt(5)) / 2, digits = 17)   # The real Golden Ratio (approximately)
 #   from the inside out.
 
 
+# ==== Files, and the working directory ========================================
+
+# We need to make sure thw working directory is set correctly. Execute
+list.files()
+# ... to get a list of files in the current working directory.
+# If this is not the list of files you see in the Files Pane, execute
+getwd()
+# ... to see what the working directory is set to. Then use the menu:
+# Session -> Set Working Directory -> To Project Directory
+# This executes the correct setwd() command. Confirm by executing
+list.files()
+# ... again.
+#
+
 # ==== Change some code and save the change ====================================
 
 # Here is a bit of code that plots 1.5 turns of the Golden Spiral. Don't worry
@@ -123,7 +137,9 @@ abline(h = 0, col = "#E6EEFF")               # ... and horizontal line
 
 # Execute the modified block of code. The number of the turns increases.
 
-# Now save the change. The filename changes to black again.
+# Now save the change. The filename changes to black again. The Modified date
+# of the script in the Files Pane is now today's date.
+
 
 # ==== Quit, and restart where you left off ====================================
 
@@ -141,6 +157,7 @@ abline(h = 0, col = "#E6EEFF")               # ... and horizontal line
 # turns should now be what you had changed it to.
 
 # Plot another beautiful spiral for good measure.
+
 
 # ==== Typing shortcuts and autocomplete =======================================
 
@@ -169,6 +186,7 @@ abline(h = 0, col = "#E6EEFF")               # ... and horizontal line
 #         - Retrieving code via the History tab
 #         - Selecting code in the Script Pane and executing it
 #           with <command><enter>
+#         - Setting the Working Directory
 #         - Editing code in the script and saving the change
 #         - Quitting RStudio and restarting a recent project.
 #         - Some typing shortcuts
