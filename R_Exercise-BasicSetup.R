@@ -1,15 +1,17 @@
 # R_Exercise-BasicSetup.R
 #
-# Purpose: Configure and verify the basic setup of R projects
+# Purpose: Configure and verify the basic setup of R projects. Play with
+#          code.
 #
 # Note:    This project lives on Github:
 #          https://github.com/hyginn/R_Exercise-BasicSetup
 #
-# Version: 1.0
+# Version: 1.1
 #
-# Date:    2016  12
+# Date:    2017  04
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.1    Add fast phi calculation and complex expression selection
 # V 1.0    Golden Spiral example
 # V 0.2    Additions to integrate with tutorial
 # V 0.1    First code
@@ -17,7 +19,7 @@
 # TODO:
 #
 #
-# == TEST YOUR SETUP ======================================
+# == TEST YOUR SETUP ===========================================================
 #
 
 #  BRAVA! You have successfully loaded the project file from GitHub.
@@ -46,7 +48,8 @@
 # probably won't be using the other tabs.)
 
 
-# ==== Execute some code =======================================================
+# ==== Executing some code =====================================================
+#
 #  You can execute code by typing it into the console.
 #  Type: 3 + 4  and then hit <enter>
 #
@@ -71,7 +74,20 @@
 # You can ALSO execute code by selecting and pressing <command><enter> (or
 # <ctrl><enter> on Windows). This passes code from the Script Pane to the
 # console and executes it automatically. This is very convenient - in fact, this
-# is the preferred way to work with lengthy scripts. There are several variants:
+# is the preferred way to work with lengthy scripts. Try this immediately: place
+# the cursor into the expression below and type <command><enter>:
+
+
+cat("\n  /\\_/\\\n ( o.o )\n  > ^ <\n\n")
+
+
+# (No, the function cat() is not specifically meant to draw images of cats!
+# Its name comes from conCATenate.)
+
+
+# There are several variants to selecting and executing code. Read this
+# carefully and try the alternatives - these crazy tricks will change your
+# life. Number four will leave you speechless:
 
 #  - When nothing is selected in the Script Pane, pressing <command><enter> will
 #    execute the current line and move the cursor to the next line. You can
@@ -79,29 +95,93 @@
 #  - This is the same as if you would have selected an entire line.
 
 #  - If you select more than one line, you can execute an entire block of code
-#    at once. Try this: select the block of code below (lines 87 to 95),
+#    at once. Try this: select the block of code below (lines 97 to 106),
 #    and hit <command><enter> to execute it. The code calculates successive
 #    approximations of the Golden Ratio from Fibonacci numbers, and then prints
 #    the "true" value.
 
-FibPrev <- 1
-FibCurr <- 1
-for (i in 1:35) {
-    print(FibCurr / FibPrev, digits = 17)
+FibPrev <- 1L    # assign integer 1
+FibCurr <- 1L
+for (i in 1:40) {
+    print(FibCurr / FibPrev, digits = 22) # approximate phi as the ratio of
+                                          # two successive Fibonacci numbers
     tmp <- FibCurr
-    FibCurr <- FibPrev + FibCurr
-    FibPrev <- tmp
+    FibCurr <- FibPrev + FibCurr          # calculate the next Fibonacci number
+    FibPrev <- tmp                        # swap
 }
-print((1 + sqrt(5)) / 2, digits = 17)   # The real Golden Ratio (approximately)
+print((1 + sqrt(5)) / 2, digits = 22)   # The real Golden Ratio (approximately)
 
-# - But it's also really useful to be able to select _less_ than one line of
+# Nb. This is a slow algorithm - it adds about a digit of accuracy every 3.5
+# iterations. While we're here, let's play a bit: Here is a MUCH faster
+# algorithm, based on the following identities:
+#    Given F[k] and F[k + 1]:
+#        F_2k   == F_k * ((2 * F_k+1) - F_k)
+#        F_2k+1 == F_k^2 + F_k+1^2
+
+FibPrev <- 1L    # assign integer 1
+FibCurr <- 1L
+for (i in 1:7) {
+    print(FibCurr / FibPrev, digits = 22) # approximate phi as the ratio of
+    # two successive Fibonacci numbers
+    Fk  <- FibPrev
+    Fk1 <- FibCurr
+    FibPrev <- Fk * ((2 * Fk1) - Fk)  # calculate F_2k
+    FibCurr <- Fk^2 + Fk1^2           # calculate F_2k+1
+}
+print((1 + sqrt(5)) / 2, digits = 22)   # The real Golden Ratio (approximately)
+
+
+# This is just playing with numbers (i) for you to practice reading code, (i)
+# experimenting with alternatives (for example you could install the Rmpfr
+# package for arbitrarily accurate computations, and calculate phi to 100 digits
+# accuracy), and (iii) understand that efficient algorithms can be _very_ much
+# faster than naive approaches to calculate. Often whether something can be
+# practically calculated at all depends on whether you can aproach the problem
+# in a way that it maps to one for which an efficient algortihm is available.
+
+
+# Back to selecting and executing code:
+# - It's also really useful to be able to select _less_ than one line of
 #   code. For example, this allows us to analyze complex, nested R expressions
 #   from the inside out.
+
+# Here's an example: assume you would like to try an intermittent fasting
+# regime, fasting every fifth day, starting tomorrow. What will the next five
+# weekdays of fasting be?
+
+format(Sys.Date() + 1 + seq(0, length.out = 5, by = 5), "%a")
+
+# How does this work? Let's analyze the components of this expression. First
+# select  Sys.Date() and execute it. You should get today's date.
+#
+# Next select Sys.Date() + 1 and execute that. This should give you
+# tomorrow's date.
+#
+# Next select seq(0, length.out = 5, by = 5) and execute it. You should get
+# [1]  0  5 10 15 20 ... i.e a vector of numbers, starting from 1, 5 numbers
+#                            in all, each incremented by 5.
+#
+# What do we get when we add one to this vector? Select
+# 1 + seq(0, length.out = 5, by = 5)
+# and execute it to find out.
+#
+# And what do we get when we add a date to this resulting vector? Select
+# Sys.Date() + 1 + seq(0, length.out = 5, by = 5)
+# and execute it. These are the next five fasting days.
+
+# And finally, what weekdays are these? format() is a versatile function that
+# can handle many different types of R objects. We call this a "generic"
+# function. If the object is of class "Date", the function sends the data to the
+# format.Date() function, which knows how to convert this into weekdays (see
+# ?strptime for a complete list of format options).
+
+# Get into the habit to decompose R expressions and analyze what the individual
+# components, how they are nested, and how they work together.
 
 
 # ==== Files, and the working directory ========================================
 
-# We need to make sure thw working directory is set correctly. Execute
+# We need to make sure the working directory is set correctly. Execute
 list.files()
 # ... to get a list of files in the current working directory.
 # If this is not the list of files you see in the Files Pane, execute
@@ -121,7 +201,7 @@ list.files()
 
 turns <- 1.5                                 # number of turns to plot
 p <- seq(0, (turns * 2 * pi),
-         length.out = round(turns * 100))    # intervals
+         length.out = round(turns * 100))    # intervals, in radians
 plot(exp(0.3061868562 * p) * cos(p),         # x-coordinates
      exp(0.3061868562 * p) * sin(p),         # y-coordinates
      type = "l", col = "#CC0000",            # draw as a red line
@@ -186,6 +266,7 @@ abline(h = 0, col = "#E6EEFF")               # ... and horizontal line
 #         - Retrieving code via the History tab
 #         - Selecting code in the Script Pane and executing it
 #           with <command><enter>
+#         - analyzing R expressions by selecting and executing parts
 #         - Setting the Working Directory
 #         - Editing code in the script and saving the change
 #         - Quitting RStudio and restarting a recent project.
