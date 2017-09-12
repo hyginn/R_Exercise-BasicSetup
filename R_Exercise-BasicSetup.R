@@ -8,7 +8,7 @@
 #
 # Version: 1.1
 #
-# Date:    2017  04
+# Date:    2017  09
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
 # V 1.1    Add fast phi calculation and complex expression selection
@@ -19,15 +19,33 @@
 # TODO:
 #
 #
-# == TEST YOUR SETUP ===========================================================
-#
+
+#TOC> ==========================================================================
+#TOC>
+#TOC>   Section  Title                                   Line
+#TOC> -------------------------------------------------------
+#TOC>   1        The RStudio layout                        48
+#TOC>   2        Executing code                            69
+#TOC>   2.1      Up-arrow recalls previous commands        77
+#TOC>   2.2      Hisory tab                                88
+#TOC>   2.3      Cmd-Enter to execute selected code        93
+#TOC>   2.4      Analyzing expressions inside-out         165
+#TOC>   3        Files, and the working directory         205
+#TOC>   4        Change some code and save the change     219
+#TOC>   5        Quit, and restart where you left off     247
+#TOC>   6        Shortcuts and autocomplete               265
+#TOC>   7        Summary                                  286
+#TOC>
+#TOC> ==========================================================================
+
+
 
 #  BRAVA! You have successfully loaded the project file from GitHub.
 
 # Now go through the tasks below, then return to the Wiki tutorial. But keep
 # RStudio open so you can continue to use it in the tutorial.
 
-# ==== The RStudio layout ======================================================
+# =    1  The RStudio layout  ==================================================
 
 # In the default layout of RStudio's panes, this script file has been opened in
 # the top-left pane; I refer to this as the "Script Pane". This is where you
@@ -48,13 +66,15 @@
 # probably won't be using the other tabs.)
 
 
-# ==== Executing some code =====================================================
+# =    2  Executing code  ======================================================
 #
 #  You can execute code by typing it into the console.
 #  Type: 3 + 4  and then hit <enter>
 #
 #  Now type: 1 + sqrt(5) / 2
 #  (This is NOT the Golden Ratio, phi)
+#
+# ==   2.1  Up-arrow recalls previous commands  ================================
 #
 #  To change this to the formula for the Golden Ratio, you need to use
 #  parentheses to enforce the proper operator precedence. Use the up-arrow key
@@ -65,11 +85,12 @@
 #  R should respond with
 #       [1] 1.618034
 #
-
+# ==   2.2  Hisory tab  ========================================================
 # Another way to access previously typed code is through the History tab in the
 # upper-right pane. Scroll to find a line that you want to execute or edit,
 # double-click it, and it will appear in the Console. Try this.
 
+# ==   2.3  Cmd-Enter to execute selected code  ================================
 
 # You can ALSO execute code by selecting and pressing <command><enter> (or
 # <ctrl><enter> on Windows). This passes code from the Script Pane to the
@@ -95,10 +116,10 @@ cat("\n  /\\_/\\\n ( o.o )\n  > ^ <\n\n")
 #  - This is the same as if you would have selected an entire line.
 
 #  - If you select more than one line, you can execute an entire block of code
-#    at once. Try this: select the block of code below (lines 97 to 106),
-#    and hit <command><enter> to execute it. The code calculates successive
-#    approximations of the Golden Ratio from Fibonacci numbers, and then prints
-#    the "true" value.
+#    at once. Try this: select the block of code below, (from the first
+#    assignment of FibPrev to the print() statement) and hit <command><enter>
+#    to execute it. The code calculates successive approximations of the Golden
+#    Ratio from Fibonacci numbers, and then prints the "true" value.
 
 FibPrev <- 1L    # assign integer 1
 FibCurr <- 1L
@@ -140,10 +161,12 @@ print((1 + sqrt(5)) / 2, digits = 22)   # The real Golden Ratio (approximately)
 # in a way that it maps to one for which an efficient algortihm is available.
 
 
-# Back to selecting and executing code:
-# - It's also really useful to be able to select _less_ than one line of
-#   code. For example, this allows us to analyze complex, nested R expressions
-#   from the inside out.
+
+# ==   2.4  Analyzing expressions inside-out  ==================================
+
+# Selecting and executing code is also really useful to analyze complex, nested
+# R expressions from the inside out. For this, you select _less_ than
+# one line of code.
 
 # Here's an example: assume you would like to try an intermittent fasting
 # regime, fasting every fifth day, starting tomorrow. What will the next five
@@ -179,12 +202,12 @@ format(Sys.Date() + 1 + seq(0, length.out = 5, by = 5), "%a")
 # components, how they are nested, and how they work together.
 
 
-# ==== Files, and the working directory ========================================
+# =    3  Files, and the working directory  ====================================
 
 # We need to make sure the working directory is set correctly. Execute
 list.files()
 # ... to get a list of files in the current working directory.
-# If this is not the list of files you see in the Files Pane, execute
+# If this is not the list of files you see in RStudio's  Files Pane, execute
 getwd()
 # ... to see what the working directory is set to. Then use the menu:
 # Session -> Set Working Directory -> To Project Directory
@@ -193,7 +216,7 @@ list.files()
 # ... again.
 #
 
-# ==== Change some code and save the change ====================================
+# =    4  Change some code and save the change  ================================
 
 # Here is a bit of code that plots 1.5 turns of the Golden Spiral. Don't worry
 # if you don't understand the details - that's not the point right now. Execute
@@ -221,7 +244,7 @@ abline(h = 0, col = "#E6EEFF")               # ... and horizontal line
 # of the script in the Files Pane is now today's date.
 
 
-# ==== Quit, and restart where you left off ====================================
+# =    5  Quit, and restart where you left off  ================================
 
 # Finally, we'll quit RStudio and restart the project. It should be obvious how
 # to quit. But here's how to reload a project.
@@ -239,7 +262,7 @@ abline(h = 0, col = "#E6EEFF")               # ... and horizontal line
 # Plot another beautiful spiral for good measure.
 
 
-# ==== Typing shortcuts and autocomplete =======================================
+# =    6  Shortcuts and autocomplete  ==========================================
 
 # RStudio's editor has a number of useful shortcuts and aids. Try them.
 #
@@ -260,19 +283,20 @@ abline(h = 0, col = "#E6EEFF")               # ... and horizontal line
 #     the correct case. Try it: type  Tur  and you should get the variable
 #     "turns" selected.
 
-# Review: - The layout of the Panes
-#         - Typing code
-#         - Editing code in the Console, using the arrow keys
-#         - Retrieving code via the History tab
-#         - Selecting code in the Script Pane and executing it
-#           with <command><enter>
-#         - analyzing R expressions by selecting and executing parts
-#         - Setting the Working Directory
-#         - Editing code in the script and saving the change
-#         - Quitting RStudio and restarting a recent project.
-#         - Some typing shortcuts
+# =    7  Summary  =============================================================
 
-# Finally, return to the tutorial Wiki page.
+# Summary:- The layout of the Panes
+#          - Typing code
+#          - Editing code in the Console, using the arrow keys
+#          - Retrieving code via the History tab
+#          - Selecting code in the Script Pane and executing it
+#            with <command><enter>
+#          - analyzing R expressions by selecting and executing parts
+#          - Setting the Working Directory
+#          - Editing code in the script and saving the change
+#          - Quitting RStudio and restarting a recent project.
+#          - Some typing shortcuts
+
 
 
 # [END]
