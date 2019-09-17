@@ -4,11 +4,11 @@
 # Version: 0.1
 # Version history:
 # Date:      2019-09-17
-# Author:
-# License:
+# Author:    Boris Steipe
+# License:   MIT
 #
 # Input:    inDate   string   the date from which to calculate
-#           interval
+#           interval int      desired offset interval
 # Output:           string   the date after  interval  number of days
 # Dependencies:
 #
