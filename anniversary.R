@@ -1,6 +1,6 @@
 # anniversary.R
 #
-# Purpose: Calculate calndar date a specified number of days away from input.
+# Purpose: Calculate calendar date a specified number of days away from input.
 # Version: 0.1
 # Version history:
 # Date:      2019-09-17
