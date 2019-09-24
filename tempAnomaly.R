@@ -30,7 +30,6 @@ DATADIR <- "~/Documents/07.Teaching/36-BCH441 Bioinformatics 2019/data"
 
 
 
-
 # ====  PACKAGES  ==============================================================
 
 if (! requireNamespace("ncdf4", quietly=TRUE)) {
@@ -53,10 +52,15 @@ n2YM <- function(x) {
 	# Value:
 	#     vector of strings
 
-	# code ...
+	year <- floor(x)
+    month <- round(((x - year) * 12 ) + 0.5)
+    v <- sprintf("%d:%d", year, month)
 
 	return(v)
 }
+
+?floor
+
 
 getMapPointIndex <- function(lat, lon, lats, lons) {
     # Purpose: Find the map point index which is closest to lat, lon given
@@ -95,16 +99,18 @@ getMapPointIndex <- function(lat, lon, lats, lons) {
 #
 # head(ncvar_get(tmp, "longitude"), 100)
 # head(ncvar_get(tmp, "latitude"), 100)
+# range(ncvar_get(tmp, "latitude"), 100)
 # x <- ncvar_get(tmp, "temperature")
 # t <- ncvar_get(tmp, "time")
 # tail(t)
-
+#
 # t36 <- list()
 # t36$lon <- ncvar_get(tmp, "longitude")
 # t36$lat <- ncvar_get(tmp, "latitude")
 # t36$t   <- ncvar_get(tmp, "temperature")[ , 2001:2036]
+# t36$tPoints <- ncvar_get(tmp, "time")[2001:2036]
 # colnames(t36$t) <- ncvar_get(tmp, "time")[2001:2036]
-# colnames(t36$t) <- sprintf("%6.2f", ncvar_get(tmp, "time")[2001:2036])
+# colnames(t36$t) <- n2YM(ncvar_get(tmp, "time")[2001:2036])
 # rownames(t36$t) <- 1:nrow(t36$t)
 # save(t36, file = "t36.RDat")
 
