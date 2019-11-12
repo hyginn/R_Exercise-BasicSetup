@@ -2,11 +2,12 @@
 #
 # Purpose:  Demonstrate linear and non-linear regression, and how to use the
 #           results to analyze data in parameter space.
-# Version:  0.1
+# Version:  0.2
 # Version history:
+#           0.2 Add more sophisticated curve fitting
 #           0.1 Initial code
 #
-# Date:     2019-10-29
+# Date:     2019-10 - 2019-11
 # Author:   boris.steipe@utoronto.ca
 # License:  CC-BY
 #
@@ -100,12 +101,12 @@ pBar <- function(i, l, nCh = 50) {
 # regression, or curve fitting.
 
 # Linear regression fits data to a linear expression: y = ax + b with parameters
-# a: the slope, and b: the intercept of the function. The task is, for a given data
-# set, to infer what the parameters of it's linear idealization are.
+# a: the slope, and b: the intercept of the function. The task is, for a given
+# data set, to infer what the parameters of it's linear idealization are.
 
-# Let's construct a synthetic sample of observations that could come from measuring
-# height and weight of a human cohort. We generate random heights in an
-# interval, then calculate hypothetical weights according to a simple linear
+# Let's construct a synthetic sample of observations that could come from
+# measuring height and weight of a human cohort. We generate random heights in
+# an interval, then calculate hypothetical weights according to a simple linear
 # equation. Finally we add "errors" to the weights.
 
 # The goal of our analysis is to recover the parameters of our synthetic data.
@@ -380,6 +381,9 @@ cor(ygProfiles[iRow, ], predict(myFit)) # 0.901
 # Here is a function to plot a profile, and its fitted curve
 
 checkFit <- function(iRow, fit) {
+    if (is.null(fit)) {
+        return()
+    }
     t <- seq(0, 120, by = 5)
     y <- ygProfiles[iRow, ]
     plot(t, ygProfiles[iRow, ], col = "black", type = "b",
@@ -487,7 +491,7 @@ points(seq(0, 120, by = 5), ygProfiles[iRow, ], type = "b", col = "red")
 cor(ygProfiles[iRow, ], myModel)
 
 
-# Beyond finding genes, we can use the parameters to get gloabl information
+# Beyond finding genes, we can use the parameters to get global information
 # about the experiment - for example: what is the period of the yeast cell
 # cycle? We just need to select genes that *are* cyclically expressed,
 # (e.g. abs(cor) >= 0.75 & abs(A) >= 0.1 & abs(f) in [0.5, 2.0]), and look at
@@ -511,7 +515,734 @@ median(nlsResults$f[sel])  # one hour three minutes and twentythree seconds
 # cyclically expressed? Where would you draw the line?
 #
 
-# ... [TBC]
+# ====  MORE SOPHISTICATED CURVE FITTING  ======================================
+
+# Quite a few of our profiles have rather poor correlations. We could just
+# discard them and say: these are not cyclically expressed genes. But it's of
+# course better to spend some time and ask what is really going on there. For
+# examle, here are genes with high amplitude and poor correlations:
+
+sel <- which(nlsResults$A > 0.3 & nlsResults$cor < 0.4)
+nlsResults[sel,]
+
+# Let's write a nice function to plot the profiles and the fitted parameters so
+# we can explore them more easily:
+#
+
+plotFit <- function(iRow, myA, myPhi, myF) {
+    # Without parameters, we just plot the current fit with parameters
+    # from nlsResults.
+    # With parameters, we try a new fit with the given starting values.
+    t <- seq(0, 120, by = 5)
+    y <- ygProfiles[iRow,]
+    origCor <- nlsResults$cor[iRow]
+    origA <- nlsResults$A[iRow]
+    origPhi <- nlsResults$phi[iRow]
+    origF <- nlsResults$f[iRow]
+    plot(t, y, type="b",
+         xlab = "", ylab = "log-ratio",
+         main = sprintf("%d: %s (%s)",
+                        iRow,
+                        ygData$sysName[iRow],
+                        ygData$stdName[iRow]))
+    mtext(sprintf("Original fit:  cor: %5.3f, A: %5.3f, phi: %5.3f, f: %5.3f",
+                  origCor,
+                  origA,
+                  origPhi,
+                  origF),
+          col = "#AA0000", side = 1, line = 3)
+    points(0:120, cycEx(0:120, origA, origPhi, origF),
+           type="l", col="#AA0000")
+    if (! missing(myA)) { # Try a new fit with these parameters
+        myFit <- nls(y ~ cycEx(t, A, phi, f),
+                     start = list(A = myA,
+                                  phi = myPhi,
+                                  f = myF),
+                     control = nls.control(maxiter = 200))
+        points(0:120, cycEx(0:120,
+                            coef(myFit)["A"],
+                            coef(myFit)["phi"],
+                            coef(myFit)["f"]),
+               type="l", col="#00DD88")
+        mtext(sprintf("New fit:  cor: %5.3f, A: %5.3f, phi: %5.3f, f: %5.3f",
+                      cor(y, predict(myFit)),
+                      coef(myFit)["A"],
+                      coef(myFit)["phi"],
+                      coef(myFit)["f"]),
+              col = "#00DD88", side = 1, line = 4)
+    }
+}
+
+iRow <- 4966  # sel[4], when I ran the code
+plotFit(iRow)
+# Clearly, this fit has not converged. But if we guess possible parameters ...
+plotFit(iRow, 0.1, -20, 0.9)
+# ... we get a pretty decent fit with _much_ better correlation.
+
+
+iRow <- 5058
+plotFit(iRow)
+# Another case of non-convergence
+plotFit(iRow, 0.04, 10, 1.5)
+
+
+iRow <- 5059
+plotFit(iRow)
+# Again, non-convergence.
+plotFit(iRow, 0.02, 30, 0.5)
+
+
+
+# == IMPROVING OUR FITTING STRATEGY:
+#    (I) Try different parameters and select the best result
+
+# This is pretty trivial - we'll just write a function that tries starting our
+# parameter search from a few different options, then checks which one has the
+# best correlation and returns these values. The function could be:
+
+bestFitSimple <- function(y) {
+    # Tries different parameter settings for nls() and returns the best
+    # fit object.
+    nlsFits <- list()
+    nlsCors <- numeric()
+    myPars <- data.frame(A   = c(0.1, 0.1, 0.04, 0.04, 0.05,  0.03,  0.03),
+                         phi = c(0.1,  15,   -2,   10,   45,   0.1,   0.1),
+                         f   = c(1.0, 1.0, 0.95,  1.5,  1.0, 0.618, 1.618))
+    for (i in 1:nrow(myPars)) {
+        try(myFit <- nls(y ~ cycEx(t, A, phi, f),
+                         start = list(A = myPars$A[i],
+                                      phi = myPars$phi[i],
+                                      f = myPars$f[i]) ),
+            silent = TRUE)
+        if (length(myFit) > 0) {
+            nlsFits[[i]] <- myFit
+            nlsCors[i] <- cor(y, predict(myFit))
+        }
+    }
+    best <- which(nlsCors == max(abs(nlsCors)))[1]
+    return(nlsFits[[best]])
+}
+
+# Let's try the procedure for our three problem profiles, and plot the results
+iRow <- 4966
+( newFit <- bestFitSimple(ygProfiles[iRow, ]) )
+checkFit(iRow, newFit)
+
+iRow <- 5058
+checkFit(iRow, bestFitSimple(ygProfiles[iRow, ]))
+
+iRow <- 5059
+checkFit(iRow, bestFitSimple(ygProfiles[iRow, ]))
+
+# No magic here - not all fits converged - but we get much more reasonable
+# results than we had before. We also increase our processing requirements by a
+# factor of seven, because we are trying seven parameter combinations for every
+# fit. Let's see if this is worth the trouble:
+
+N <- nrow(ygProfiles)
+nlsBestFitResults <- data.frame(A = numeric(N),
+                                phi = numeric(N),
+                                f = numeric(N),
+                                cor = numeric(N))
+for (i in 1:N) {
+    pBar(i, N)  # print a progress bar (function in .utilities.R)
+    y <- ygProfiles[i,]
+    myFit <- bestFitSimple(y)
+    if (length(myFit) > 0) {
+        nlsBestFitResults$A[i]   <- coef(myFit)["A"]
+        nlsBestFitResults$phi[i] <- coef(myFit)["phi"]
+        nlsBestFitResults$f[i]   <- coef(myFit)["f"]
+        nlsBestFitResults$cor[i] <- cor(y, predict(myFit))
+    }
+}
+
+# make a backup copy ( we could also load that if we don't want to wait for
+# the code to finish ...)
+save(nlsBestFitResults, file = "nlsBestFitResults.RData")
+# load("nlsBestFitResults.RData")
+
+# Let's plot correlation / Amplitude side by side. For ease of comparison, we'll
+# flip all nlsResult amplitudes to be negative, and we'll flip all
+# nlsBestFitResults to be positive. And we'll plot them as solid dots, with high
+# transparency to better visualize the density.
+
+plot(0, 0, type = "l",
+     xlim = c(-0.5, 0.5), ylim = c(-1, 1),
+     xlab = "A", ylab = "cor")
+points(-abs(nlsResults$A), nlsResults$cor, pch=19, col="#CC555505")
+points(abs(nlsBestFitResults$A), nlsBestFitResults$cor, col="#33DD3F07")
+
+# Qualitatively, we see great improvement, and quantitatively, eg. considering
+# the number of gene expression profiles we have fit with a coefficient of
+# correlation better than 0.8 ...
+
+sum(nlsResults$cor > 0.8)
+sum(nlsBestFitResults$cor > 0.8)
+
+# For good measure, let's inspect some of the profiles of the "worst of the
+# best", eg. ranked at position 600:
+
+sel <- order(nlsBestFitResults$cor, decreasing = TRUE)[600:605]
+sel  # [1] 4385  948 3024 2335 1523 3975
+
+nlsBestFitResults[sel, ]  # What do the parameters mean?
+
+# Inspect the profiles and fits ...
+iRow <- sel[1]
+checkFit(iRow, bestFitSimple(ygProfiles[iRow, ]))
+
+iRow <- sel[2]
+checkFit(iRow, bestFitSimple(ygProfiles[iRow, ]))
+
+iRow <- sel[3]
+checkFit(iRow, bestFitSimple(ygProfiles[iRow, ]))
+
+iRow <- sel[4]
+checkFit(iRow, bestFitSimple(ygProfiles[iRow, ]))
+
+iRow <- sel[5]
+checkFit(iRow, bestFitSimple(ygProfiles[iRow, ]))
+
+# The last  rows show an important limitation on our fit: our model is
+# constrained to be symmetric about 0, and if the data is not symmetric but
+# shifted, we can't get a good fit. Which leads us directly to:
+
+# == IMPROVING OUR FITTING STRATEGY:
+#    (II) Add parameters to our model, for flexibility
+
+# A model can have too many parameters, and that will give rise to "overfitting"
+# - satisfying the mathematics of the model, but not the physics or the biology
+# of the data. But in our case, with 25 data points and only three parameters to
+# fit, adding one or two parameters to the model should be fine. I would like to
+# add two parameters: (I) a vertical offset, to release the constraint of our
+# fitted model to be symmetric around 0, and (II) a damping function, to handle
+# attenuation of expression - after all we saw a large component of global
+# change in our first Principal Component.
+
+# Let's see what mathematical form such parameters can take.
+# We were considering points along a time axis of two hours in 5 min. intervals:
+t <- seq(0, 120, by = 5)
+
+# This was our original function ...
+cycEx <- function(t, A, phi, f) {
+    # cosine function with amplitude A, phase phi (in minutes), and
+    # frequency 1/f, scaled for one full cycle corresponding to 60 min.
+    A * (cos((((t - phi) * 2 * pi) / 60) / f) )
+}
+
+# ... and here we add a vertical offset B and an exponential damping term,
+# exp(-k * t)...
+cycEx2 <- function(t, A, phi, f, k, B) {
+    # cosine function with amplitude A, phase phi (in minutes), and
+    # frequency f, scaled for one full cycle corresponding to 60 min,
+    # with damping term exp(-k * t) and vertical offset B
+    ( (exp(-k * t) *    # damping term
+           (A *            # scaling term
+                ( cos( ( ((t - phi) / 60) * 2 * pi )  * f) )
+           )
+    )
+    ) + B               # vertical offset
+}
+
+# Let's overwrite plotModel()  to
+# conveniently explore parameters:
+plotModel <- function(t, A = 1.0, phi = 0, f = 1.0, k = 0, B = 0,
+                      thisCol = "#CC0000", plt = TRUE) {
+
+    ex <- cycEx2(t, A, phi, f, k, B)
+    if (plt) {
+        plot(t, ex, col = thisCol, type = "l",
+             ylim = c(min(ex) * 1.2, max(ex) * 1.2),
+             xlab = "t (min.)", ylab = "expression log-ratio",
+             main = "Model",
+             sub = sprintf("A: %5.3f, f: %5.3f, phi: %5.3f, k: %5.3f, B: %5.3f",
+                           A, f, phi, k, B)
+        )
+        abline(h =  0, col = "#DDEEFF")
+        abline(v = 60, col = "#DDEEFF")
+    } else {
+        points(t, ex, col = thisCol, type = "l")
+    }
+}
+
+# Varying B .. trivial
+plotModel(t, B = 0)
+plotModel(t, B = 0.2,  thisCol = "#DD99CC", plt = FALSE)
+plotModel(t, B = -0.2, thisCol = "#FFDDEE", plt = FALSE)
+plotModel(t, A = 0.5, B = -0.5, thisCol = "#CC99DD", plt = FALSE)
+
+# Varying k
+plotModel(t, k = 0)
+plotModel(t, k = 0.01, thisCol = "#DD99CC", plt = FALSE)
+plotModel(t, k = 0.02, thisCol = "#FFDDEE", plt = FALSE)
+plotModel(t, A = 0.5, k = -0.008, thisCol = "#22EE66", plt = FALSE)
+
+
+# Ok ... but does it fit? Let's update our bestFit function - and let's see if
+# we can get away with not having to try additional parameter combinations.
+# Also, we'll add lower and upper bounds to ensure that the amplitudes are
+# always positive, and initial up- or down- regulation is fitted as phase shift,
+# not inversion of amplitude. To define upper- and lower- bounds of parameters,
+# we need to use the "port" algorithm of nls().
+
+
+bestFit <- function(y) {
+    # Tries different parameter settings for nls() and returns the best
+    # fit object.
+    t <- seq(0, 120, length.out = length(y))
+    myPars <- data.frame(A   = c(0.1, 0.1, 0.1, 0.1,  0.03,  0.03),
+                         phi = c(0.1,  10,  30,  40,   0.1,   0.1),
+                         f   = c(1.0, 1.0, 1.0, 1.0, 0.618, 1.618))
+    nlsFits <- list()
+    nlsCors <- numeric(nrow(myPars))
+    myLower <- c(0.01,  -240, 0.01, -5, -2)
+    myUpper <- c(2.00,   240, 20.0,  5,  2)
+    names(myLower) <- c("A", "phi", "f", "k", "B")
+    names(myUpper) <- c("A", "phi", "f", "k", "B")
+    for (i in 1:nrow(myPars)) {
+        myFit <- list()
+        try(myFit <- nls(y ~ cycEx2(t, A, phi, f, k, B),
+                         start = list(A = myPars$A[i],
+                                      phi = myPars$phi[i],
+                                      f = myPars$f[i],
+                                      k = 0.01,
+                                      B = 0.01),
+                         algorithm = "port",
+                         lower = myLower,
+                         upper = myUpper),
+            silent = TRUE)
+        if (length(myFit) > 0) {
+            nlsFits[[i]] <- myFit
+            nlsCors[i] <- cor(y, predict(myFit))
+        }
+    }
+    if (sum(nlsCors) != 0) {  # some fit converged
+        best <- which(nlsCors == max(abs(nlsCors)))[1]
+        return(nlsFits[[best]])
+    } else {
+        return(NULL)
+    }
+
+}
+
+
+# Evaluate a few fits...
+
+iRow <- 1207
+( newFit <- bestFit(ygProfiles[iRow, ]) )
+checkFit(iRow, newFit)
+
+iRow <- 2578
+checkFit(iRow, bestFit(ygProfiles[iRow, ]))
+# cor is 0.892 ... and with the old function:
+checkFit(iRow, bestFitSimple(ygProfiles[iRow, ]))
+
+iRow <- 4428
+checkFit(iRow, bestFit(ygProfiles[iRow, ]))
+
+iRow <- 281
+checkFit(iRow, bestFit(ygProfiles[iRow, ]))
+
+iRow <- 2501
+checkFit(iRow, bestFit(ygProfiles[iRow, ]))
+# This was a problem fit, quite good now ... Compare to the old fit
+checkFit(iRow, bestFitSimple(ygProfiles[iRow, ]))
+# Once again ...
+checkFit(iRow, bestFit(ygProfiles[iRow, ]))
+
+# Some of our standards: Mbp1, Swi4, Swi6 ...
+
+iRow <- which(ygData$stdName == "MBP1")
+checkFit(iRow, bestFit(ygProfiles[iRow, ]))
+
+iRow <- which(ygData$stdName == "SWI4")
+checkFit(iRow, bestFit(ygProfiles[iRow, ]))
+
+iRow <- which(ygData$stdName == "SWI6")
+checkFit(iRow, bestFit(ygProfiles[iRow, ]))
+
+# === Model data for data mining
+
+# We can now recalculate all the fits, and mine the results for genes with
+# similar parameters (coexpressed?), phase shifted (causally related), or other
+# interesting parameter combinations.
+
+N <- nrow(ygProfiles)
+nlsParams <- data.frame(A = numeric(N),
+                        phi = numeric(N),
+                        f = numeric(N),
+                        k = numeric(N),
+                        B = numeric(N),
+                        cor = numeric(N),
+                        call = character(N),
+                        stringsAsFactors = FALSE)
+for (i in 1:N) {
+    pBar(i, N)  # print a progress bar (function in .utilities.R)
+    y <- ygProfiles[i,]
+    myFit <- bestFit(y)
+    if (length(myFit) > 0) {
+        nlsParams$A[i]   <- coef(myFit)["A"]
+        nlsParams$phi[i] <- coef(myFit)["phi"]
+        nlsParams$f[i]   <- coef(myFit)["f"]
+        nlsParams$k[i]   <- coef(myFit)["k"]
+        nlsParams$B[i]   <- coef(myFit)["B"]
+        nlsParams$cor[i] <- cor(y, predict(myFit))
+        nlsParams$call[i] <- as.character(myFit$call)[1]
+    }
+}
+
+# This takes about 7 minutes.
+
+# ... the results are saved in "nlsParams.RData" and can be loaded from there if
+# you don't want to wait for the processing.
+# save(nlsParams, file = "nlsParams.RData")
+load(file = "nlsParams.RData")
+
+head(nlsParams)
+
+sum(nlsParams$call == "nls")
+
+
+# Again, how much has the overall fit improved?
+plot(0, 0, type = "l",
+     xlim = c(-0.5, 0.5), ylim = c(-1, 1),
+     xlab = "A", ylab = "cor")
+points(-abs(nlsBestFitResults$A),
+       nlsBestFitResults$cor, pch=19, col="#33DD3F07")
+points(abs(nlsParams$A), nlsParams$cor, col="#333FDD07")
+
+# Qualitatively, we see great improvement, and quantitatively, eg. considering
+# the number of gene expression profiles we have fit with a coefficient of
+# correlation better than 0.8 ...
+
+sum(nlsResults$cor > 0.8)
+sum(nlsBestFitResults$cor > 0.8)
+sum(nlsParams$cor > 0.8)
+
+# ... we now get a very significant fit for more than 1/3 of all genes! Note
+# however that significant fit does not mean that we have discovered cyclical
+# expression in all of those genes, but that we can now get reasonable fits also
+# for genes that do _not_ follow the model of a cyclical varying function well.
+# It becomes our task now to consider which parameters actually _do_ support
+# annotating a gene as a cell-cycle gene.
+
+# For further plotting, we construct two helper functions: a function that
+# returns the first positive peak, and a function that marks its position on a
+# plot with a triangle.
+#
+
+getReferencePeak <- function(iRow) {
+    # Finds the first non-negative peak of the fitted function.
+    # We don't know in which period of the function the phase-shift of the curve
+    # fit has converged, so we calculate peaks, reducing the period counter i
+    # until we find a peak that is < 0. Then we increase the period counter
+    # until the peak becomes > 0. This is the reference peak. Note that this
+    # peak is not necessarily the maximum of the function - if the fit is
+    # significantly damped, the peak will lie to the right of the maximum. The
+    # peak is however a maximum of the ideal, underlying periodic function.
+    if (nlsParams$f[iRow] == 0) {
+        return(NA)
+    }
+    i <- 0
+    if (nlsParams$phi[iRow] >= 0) {
+        # find first negative peak
+        rPeak <- 1  # arbitrary positive
+        while (rPeak >= 0) {
+            i <- i - 1   # decrement period counter
+            rPeak <- ( (i * 60) / nlsParams$f[iRow]) + nlsParams$phi[iRow]
+        }
+    }
+    # find first non-negative peak
+    rPeak <- -1
+    while (rPeak < 0) {
+        i <- i + 1      # increment period counter
+        rPeak <- ( (i * 60) / nlsParams$f[iRow]) + nlsParams$phi[iRow]
+    }
+
+    return(rPeak)
+}
+
+markPeak <- function(iRow, myCol = "#1cacf3") {
+    x <- getReferencePeak(iRow)
+    if (is.na(x)) {
+        return()  # No triangle to mark, had not converged
+    }
+    y <- cycEx2(x,
+                nlsParams$A[iRow],
+                nlsParams$phi[iRow],
+                nlsParams$f[iRow],
+                nlsParams$k[iRow],
+                nlsParams$B[iRow])
+    lim <- par("usr") # axis ranges of current plot
+    dx <- abs(lim[1] - lim[2]) / 60
+    dy <- abs(lim[3] - lim[4]) / 15
+    polygon(c(x, x + dx, x - dx, x),
+            c(y, y - dy, y - dy, y),
+            border = myCol,
+            lwd = 0.5)
+}
+
+# Here is a function that will help us visualize some plots and fits - we pass a
+# selection of rows, and the function plots the profile and its fit for a random
+# row from the selection, again, and again - as long as we press enter.
+
+exploreFits <- function(sel) {
+    myKey <- ""
+    while (myKey == "") {
+        iRow <- sample(sel, 1)
+        checkFit(iRow, bestFit(ygProfiles[iRow, ]))
+        markPeak(iRow)
+        myKey <- readline(prompt = "<enter> for next, any other key to stop >")
+    }
+}
+
+
+# Try a few random sampled profiles ...
+exploreFits(1:nrow(ygProfiles))
+
+# == PARAMETER DISTRIBUTIONS
+
+# Since we now have reasonable fits for most expression profiles, we can explore
+# and evaluate the parameter distributions.
+
+# === f: frequency
+# A cycle period of 60 minutes corresponds to f == 1 in our parameters.
+hist(nlsParams$f, breaks = 100, xlim = c(0, 6))
+
+# ... perhaps better to interpret if we transform f to period:
+hist(60/nlsParams$f, breaks = 1000, xlim=c(0, 120))
+
+# This shows us that indeed a large number of genes have been fitted with a
+# frequency that approximates the cell-cycle - but there is also a lot of noise.
+# ( periods < 30 min. and > 90 min.)
+
+sel <- which(nlsParams$f > 0.9 & nlsParams$f < 1.1)
+exploreFits(sel)
+
+sel <- which(nlsParams$f < 0.5)
+exploreFits(sel)
+
+sel <- which(nlsParams$f > 2.0)
+exploreFits(sel)
+
+
+# Do the fits that are centred around 60
+# min. periods have higher correlations?
+
+plot(60/nlsParams$f, nlsParams$cor, xlim=c(0, 120), cex = 0.7,
+     pch = 19, col = "#0099CC12")
+abline(v = 60, col = "#009966", lwd = 0.5)
+abline(v = c(50, 70), col = "#55AA88", lwd = 0.5, lty = 2)
+
+# ... in general, that seems to be the case - with correlations +- 10 minutes of
+# the 60 min. peak dropping off measurably. Do the fits centred around 60 min.
+# periods have higher amplitudes?
+
+plot(60/nlsParams$f, nlsParams$A, xlim=c(0, 120), cex = 0.7,
+     pch = 19, col = "#00CC9912")
+abline(v = 60, col = "#006699", lwd = 0.5)
+abline(v = c(50, 70), col = "#5588AA", lwd = 0.5, lty = 2)
+
+# That definitely seems to be the case. Let's get better resolution of the
+# low amplitudes by plotting log-values:
+#
+
+plot(60/nlsParams$f, log10(nlsParams$A), xlim=c(0, 120), cex = 0.7,
+     pch = 19, col = "#00CC9912")
+abline(v = 60, col = "#006699", lwd = 0.5)
+abline(v = c(50, 70), col = "#5588AA", lwd = 0.5, lty = 2)
+
+# This is very informative: amplitudes around 0.01 correspond to our parameter
+# bounds - and more or less correspond to non-cyclically expressed genes ...
+
+sel <- which(nlsParams$A < 0.011 & nlsParams$cor > 0.8)
+exploreFits(sel)
+
+# What about fits that have (sustained) high amplitudes?
+
+sel <- which(nlsParams$A > 0.5 &
+                 nlsParams$k < 0.03 &
+                 nlsParams$f > 0.8 &
+                 nlsParams$f < 1.25)
+exploreFits(sel)
+
+# ... in general, these fits appear to match out notion of a cell-cycle gene
+# quite well.
+
+
+
+# ==== Ordering by expression peak
+
+# How do we express the timing of the first expression peak? Our parameter phi
+# was constrained to lie between -240 and 240 minutes ...
+
+hist(nlsParams$phi, breaks = 50, xlim = c(-240, 240))
+abline(v = c(-240, 240), col = "#66EEAA")
+
+# ... and we see edge effects at the boundaries of these parameters. Plotting
+# phase-shifts shows us a core of profiles that are modelled reasonably well
+# with cyclical expression, and that profiles that are fitted with "anomalous"
+# frequencies have much larger phase shifts.
+
+plot(nlsParams$phi, log10(nlsParams$f), cex = 0.7,
+     pch = 19, col = "#CC009909")
+abline(h = log10(c(0.75, 1.333)), col = "#66EEAA", lwd = 0.5)
+
+
+# Obviously, expression profiles fitted with good amplitudes, reasonable
+# correlations, periods close to 60 minutes, and low damping are expected to
+# have phase shifts in a much narrower range:
+
+sel <- which(nlsParams$A > 0.1 &
+                 nlsParams$cor > 0.75 &
+                 nlsParams$f > 0.75 &
+                 nlsParams$f < 1.333 &
+                 nlsParams$k < 0.03 &
+                 nlsParams$k > -0.0005)
+
+# Good choices?
+exploreFits(sel)
+
+hist(nlsParams$phi[sel], breaks = 50, xlim = c(-240, 240))
+abline(v = c(-240, 240), col = "#66EEAA")
+
+# Since expression is cyclic, we can define a reference point in the cycle by
+# recording the first positive peak after t == 0 min. (The plots produced with
+# exploreFits() mark this peak with a blue triangle.) Let's compute all of the
+# peaks, so that we can explore which genes get expressed early in the
+# cell-cycle, and which genes late.
+
+N <- nrow(ygProfiles)
+refPeaks <- numeric(N)
+for (i in 1:N) {
+    refPeaks[i] <- getReferencePeak(i)
+}
+
+# With this, we can select bona fide cell-cycle genes, and order them according
+# to their peak expression:
+
+selCC <- which(nlsParams$A > 0.1 &
+                   nlsParams$cor > 0.75 &
+                   nlsParams$f > 0.75 &
+                   nlsParams$f < 1.333 &
+                   nlsParams$k < 0.03 &
+                   nlsParams$k > -0.0005)
+selCC <- selCC[order(refPeaks[selCC], decreasing = FALSE)]
+
+hist(refPeaks[selCC],
+     breaks = seq(0, 80, by = 2),
+     col = colorRampPalette(c("#00FF00",
+                              "#0066FF",
+                              "#0000FF",
+                              "#AA0088",
+                              "#FF0000",
+                              "#FFBBBB",
+                              "#FFFFFF"))(40) )
+# Here we clearly see how the cell cycle is initiated with an early set of
+# transcription and a subsequent wave of effector genes transcribed in the first
+# third of the cycle, and a second wave of expression that initiates the end of
+# the cycle. This is significant - this bimodal distribution of expression peaks
+# suggests that the cycle can be roughly subdivided into two major components of
+# concerted expression: replication and division; it is not the case that gene
+# expression peaks uniformly over the cycle.
+
+# Let's build a dataframe of cell-cycle genes and save it for future reference.
+
+CCgenes <- data.frame(i = selCC,
+                      ID = ygData$sysName[selCC],
+                      A = nlsParams$A[selCC],
+                      phi = nlsParams$phi[selCC],
+                      f = nlsParams$f[selCC],
+                      k = nlsParams$k[selCC],
+                      B = nlsParams$B[selCC],
+                      cor = nlsParams$cor[selCC],
+                      peak = refPeaks[selCC],
+                      stringsAsFactors = FALSE)
+
+# save(CCgenes, file = "CCgenes.RData")
+# load("CCgenes.RData")
+
+# === Plotting cell-cycle progression
+
+# A rather informative view of profiles through cell-cycle progression is shown
+# in Figure 1 of Pramila (2006). To reproduce a similar plot, we use the image()
+# function:
+
+# ... initialize a matrix
+exVals <- matrix(numeric(ncol(ygProfiles) * nrow(CCgenes)),
+                 nrow = ncol(ygProfiles), ncol = nrow(CCgenes))
+
+# ... load it with (scaled) expression profiles, from CCgenes - i.e. ordered by
+#     expression peak
+N <- nrow(CCgenes)
+for (iRow in 1:N) {
+    exVals[ , N - iRow + 1] <- scale(ygProfiles[CCgenes$i[iRow], ])
+}
+rownames(exVals) <- colnames(ygProfiles)
+colnames(exVals) <- CCgenes$ID
+
+# ... plot as image
+image(exVals,
+      col = colorRampPalette(c("#1cacf3",
+                               "#1cacf3",
+                               "#0f8a94",
+                               "#000000",
+                               "#000000",
+                               "#9f388a",
+                               "#de2f5d",
+                               "#de2f5d"))(256),
+      xaxt = "n", yaxt = "n", xlab = "time (min.)", ylab= "rank of phase",
+      main = "Cell cycle progression")
+axis(1, at = seq(0, 1, length.out = 25),
+     labels = seq(0, 120, by = 5), cex.axis = 0.5)
+abline(v = 0.5 + (1/50), col = "white", lwd = 0.5)
+yTicks <- 1 - (c(100, 300, 500, 700) / N)
+axis(2, at = yTicks, labels = c("100", "300", "500", "700"))
+
+# ... or plotting only every twentieth gene:
+
+idx <- seq(1, nrow(CCgenes), by = 20)
+image(exVals[ , idx],
+      col = colorRampPalette(c("#1cacf3",
+                               "#1cacf3",
+                               "#0f8a94",
+                               "#000000",
+                               "#000000",
+                               "#9f388a",
+                               "#de2f5d",
+                               "#de2f5d"))(256),
+      xaxt = "n", yaxt = "n", xlab = "time (min.)", ylab= "",
+      main = "Cell cycle progression")
+axis(1, at = seq(0, 1, length.out = 25),
+     labels = seq(0, 120, by = 5), cex.axis = 0.5, lwd.ticks =  0.5)
+abline(v = 0.5 + (1/50), col = "white", lwd = 0.5)
+yTicks <- seq(1, 0, length.out = 44)
+axis(2, at = yTicks, labels = ygData$stdName[CCgenes$i[idx]],
+     cex.axis = 0.4, las = 1, lwd.ticks =  0.5)
+
+
+# In the end, what have we learned through this?
+
+# Non-linear modelling gives us a flexible way to query data for internal
+# structure. We can now easily find expression profiles that correspond to
+# "interesting" models, given our understanding of amplitude, phase shift and
+# attenuation of the expression. Where we first were looking for structure in 25
+# time-points each, and later in a handful of principal components, we can now
+# query five parameters, e.g. to find genes with significant, or similar
+# expression profiles.
+
+# But to actually find "the most interesting" genes cannot be automated. Our
+# tools help us view the data, they do not interpret the results. As always:
+# data does not interpret itself. We have constructed some nicely sophisticated
+# tools, but in a sense that has only shifted our task: from looking at raw
+# data, to looking at parameter values. I would argue that much is gained by
+# being able to query the data in more principled ways than just visual
+# appearance, but still, the problem of biological relevance does not solve
+# itself.
+
+
+
+
 
 # ====  VALIDATION  ============================================================
 if (FALSE) {
