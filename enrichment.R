@@ -1,8 +1,9 @@
 # enrichment.R
 #
 # Purpose:  Demonstrate discovery of significantly enriched categories.
-# Version:  0.1
+# Version:  0.2
 # Version history:
+#           0.2 Maintenance
 #           0.1 Initial code
 #
 # Date:     2019-11
@@ -34,6 +35,7 @@ if (! requireNamespace("org.Sc.sgd.db", quietly = TRUE)) {
     BiocManager::install("org.Sc.sgd.db")
 }
 
+
 # Bioconductor annotation packages must be loaded to work stably:
 library(org.Sc.sgd.db)
 # (For details, see BIN_FUNC-Semantic_similarity in the ABC-units package.)
@@ -45,6 +47,7 @@ if (! requireNamespace("GOSim", quietly = TRUE)) {
     BiocManager::install("GOSim")
 }
 
+# ... and both installed packages need to be loaded as well
 library(GOSim)
 library(topGO)
 
@@ -355,9 +358,14 @@ for (i in 1:N) {
 hist(nPicks, breaks = seq(-0.5, 20.5, by = 1), col = "#BB000066")
 
 table(nPicks)
-# This is a classic problem of combinatorics and modelled by a hypergeometric
-# distribution: p(x) = choose(m, x) choose(n, k-x) / choose(m+n, k)
-#
+
+# The probability of observing a number of events x in a sample of size k given
+# the exact number of events m in a population of size m+n is is a classic
+# problem of combinatorics. There it is often expressed as the probability of
+# picking coloured balls from an urn _without_ replacement. The probability is
+# computed by a hypergeometric distribution: p(x) = choose(m, x) choose(n, k-x)
+# / choose(m+n, k)
+
 # In our case: x is observed to be between 0 and 12, m is the number of
 # red squares (positive events), n is the number of yellow squares
 # (negative events) and k is the number of samples, we had 32
@@ -373,10 +381,13 @@ for (i in 0:20) {
 }
 
 # That's a really good fit! Note: when m+n is "large", the binomial coefficients
-# may not be exact since their evaluation involves factorials. In that case
-# , you can use a poisson distribution instead. A nice discussion is here ...
-# https://www.mathxplain.com/probability-theory/discrete-and-continuous-distributions/binomial-poisson-and-hypergeometric ...
-# and many other tutorials on the Web.
+# may not be exact since their evaluation involves factorials. In that case ,
+# you can use a poisson distribution instead. Also note: if we don't know the
+# exact number of events in the population but the average number of events, we
+# use a binomial distribution instead. Working with the average is the same as
+# picking from the urn _with_ replacement. A nice discussion is here ...
+# https://www.mathxplain.com/probability-theory/discrete-and-continuous-distributions/binomial-poisson-and-hypergeometric
+# ... and many other tutorials on the Web.
 
 # With this, you can state exactly, if you have picked 15 red squares, what was
 # the probability of this happeneing by random chance.
@@ -393,7 +404,7 @@ for (i in 0:20) {
 # GO term annotations live on a graph (a DAG) with very non-random
 # ancestor/child relationships. Alexa et al. (2006) take the GO term dependency
 # structure into account with the topGO package which is widely used in GO
-# enrichment analysis.
+# enrichment analysis. It underlies the GOsim package.
 
 
 # Choose GOterms to use
