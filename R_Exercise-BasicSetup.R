@@ -6,11 +6,12 @@
 # Note:    This project lives on Github:
 #          https://github.com/hyginn/R_Exercise-BasicSetup
 #
-# Version: 1.1
+# Version: 1.2
 #
-# Date:    2017  09
+# Date:    2020  09
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.2    Maintenance, and removing files that are no longer needed
 # V 1.1    Add fast phi calculation and complex expression selection
 # V 1.0    Golden Spiral example
 # V 0.2    Additions to integrate with tutorial
@@ -42,8 +43,7 @@
 
 #  BRAVA! You have successfully loaded the project file from GitHub.
 
-# Now go through the tasks below, then return to the Wiki tutorial. But keep
-# RStudio open so you can continue to use it in the tutorial.
+# Now go through the tasks below.
 
 # =    1  The RStudio layout  ==================================================
 
@@ -62,9 +62,7 @@
 # The pane at the bottom-right displays different kinds of information in its
 # tabs: In the "Files Tab" you see a directory listing of the contents of the
 # current working directory. The "Plots Tab" shows plots and graphs that R has
-# created. And the "Help Tab" displays the information in R's help system. (We
-# probably won't be using the other tabs.)
-
+# created. And the "Help Tab" displays the information in R's help system.
 
 # =    2  Executing code  ======================================================
 #
@@ -85,6 +83,7 @@
 #  R should respond with
 #       [1] 1.618034
 #
+
 # ==   2.2  Hisory tab  ========================================================
 # Another way to access previously typed code is through the History tab in the
 # upper-right pane. Scroll to find a line that you want to execute or edit,
@@ -96,7 +95,7 @@
 # <ctrl><enter> on Windows). This passes code from the Script Pane to the
 # console and executes it automatically. This is very convenient - in fact, this
 # is the preferred way to work with lengthy scripts. Try this immediately: place
-# the cursor into the expression below and type <command><enter>:
+# the cursor anywhere into the expression below and type <command><enter>:
 
 
 cat("\n  /\\_/\\\n ( o.o )\n  > ^ <\n\n")
@@ -130,7 +129,8 @@ for (i in 1:40) {
     FibCurr <- FibPrev + FibCurr          # calculate the next Fibonacci number
     FibPrev <- tmp                        # swap
 }
-print((1 + sqrt(5)) / 2, digits = 22)   # The real Golden Ratio (approximately)
+print((1 + sqrt(5)) / 2, digits = 22)     # the real Golden Ratio)
+print(FibCurr)                            # the Fib_40 is pretty large
 
 # Nb. This is a slow algorithm - it adds about a digit of accuracy every 3.5
 # iterations. While we're here, let's play a bit: Here is a MUCH faster
@@ -150,22 +150,22 @@ for (i in 1:7) {
     FibCurr <- Fk^2 + Fk1^2           # calculate F_2k+1
 }
 print((1 + sqrt(5)) / 2, digits = 22)   # The real Golden Ratio (approximately)
+print(FibCurr)                          # Huge number, efficiently found
 
 
-# This is just playing with numbers (i) for you to practice reading code, (i)
+# This is just playing with numbers (i) for you to practice reading code, (ii)
 # experimenting with alternatives (for example you could install the Rmpfr
 # package for arbitrarily accurate computations, and calculate phi to 100 digits
 # accuracy), and (iii) understand that efficient algorithms can be _very_ much
 # faster than naive approaches to calculate. Often whether something can be
-# practically calculated at all depends on whether you can aproach the problem
+# practically calculated at all, depends on whether you can approach the problem
 # in a way that it maps to one for which an efficient algortihm is available.
-
 
 
 # ==   2.4  Analyzing expressions inside-out  ==================================
 
 # Selecting and executing code is also really useful to analyze complex, nested
-# R expressions from the inside out. For this, you select _less_ than
+# R expressions from the inside out. To do this, you select _less_ than
 # one line of code.
 
 # Here's an example: assume you would like to try an intermittent fasting
@@ -174,7 +174,8 @@ print((1 + sqrt(5)) / 2, digits = 22)   # The real Golden Ratio (approximately)
 
 format(Sys.Date() + 1 + seq(0, length.out = 5, by = 5), "%a")
 
-# How does this work? Let's analyze the components of this expression. First
+# That seems to be the correct result, but how on earth does this work?
+# To understand this, we analyze the components of this expression. First
 # select  Sys.Date() and execute it. You should get today's date.
 #
 # Next select Sys.Date() + 1 and execute that. This should give you
@@ -199,7 +200,9 @@ format(Sys.Date() + 1 + seq(0, length.out = 5, by = 5), "%a")
 # ?strptime for a complete list of format options).
 
 # Get into the habit to decompose R expressions and analyze what the individual
-# components, how they are nested, and how they work together.
+# components do, how they are nested, and how they work together. This is what
+# reading code is about. If you just gloss over such complicated expressions
+# you won't learn.
 
 
 # =    3  Files, and the working directory  ====================================
@@ -264,12 +267,13 @@ abline(h = 0, col = "#E6EEFF")               # ... and horizontal line
 
 # =    6  Shortcuts and autocomplete  ==========================================
 
-# RStudio's editor has a number of useful shortcuts and aids. Try them.
+# RStudio's editor has a number of useful shortcuts and aids for efficient
+# coding. Try them.
 #
 #   - Typing an opening parenthesis automatically types the closing parenthesis.
-#   - Selecting text and typing a quotation mark quotes the text. This also
-#     works with single quotation marks, parentheses, square brackets
-#     and curly braces.
+#   - Selecting text and typing a quotation mark quotes the selected text.
+#   - Both bracketing and quoting of selected code work with single- and
+#   - double quotation marks, parentheses, square brackets and curly braces.
 #
 #   - Typing a newline character automatically indents the following line.
 #
@@ -282,6 +286,22 @@ abline(h = 0, col = "#E6EEFF")               # ... and horizontal line
 #     Autocomplete is therefore especially useful if you are not sure about
 #     the correct case. Try it: type  Tur  and you should get the variable
 #     "turns" selected.
+#
+#   - typing <alt>-<up-arrow> shifts a line (or selected block) up or down.
+#     (I use this a lot :-)
+#
+#   - holding <alt> while selecting things allows you to select columns.
+#     Try this: in the block below select and delete the extra two
+#     columns of sevens:
+#
+#     012345677789
+#     012345677789
+#     012345677789
+#
+#   - note how the insert cursor spans all three lines. You can also use this
+#     to type into several lines at once! Try this: place the cursor behinf the
+#     three nines, then type abcdef. Hex.
+#
 
 # =    7  Summary  =============================================================
 
@@ -295,8 +315,7 @@ abline(h = 0, col = "#E6EEFF")               # ... and horizontal line
 #          - Setting the Working Directory
 #          - Editing code in the script and saving the change
 #          - Quitting RStudio and restarting a recent project.
-#          - Some typing shortcuts
-
+#          - Some amazingly useful typing and selecting shortcuts
 
 
 # [END]

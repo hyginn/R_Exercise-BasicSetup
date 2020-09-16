@@ -1,6 +1,6 @@
 # .utilities.R
 #
-# Miscellaneous R code to suppport the R_Exercise-BasicSetup project
+# R code to suppport the R_Exercise-BasicSetup project
 #
 # Version: 1.0
 # Date:    2016 12
@@ -25,7 +25,7 @@ objectInfo <- function(x) {
     cat("\nstructure of object:\n")
     str(x)
 
-    if (! is.list(x)) { # Don't use cat() if x is a list. cat() can't handle lists.
+    if (! is.list(x)) { # Don't use cat() if x is a list. cat() can't do lists.
         cat("\nmode:   ", mode(x), "\n")
         cat("typeof: ", typeof(x), "\n")
         cat("class:  ", class(x), "\n")
