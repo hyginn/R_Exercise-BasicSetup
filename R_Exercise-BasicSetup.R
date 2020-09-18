@@ -21,24 +21,24 @@
 #
 #
 
-#TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                                   Line
-#TOC> -------------------------------------------------------
-#TOC>   1        The RStudio layout                        48
-#TOC>   2        Executing code                            69
-#TOC>   2.1      Up-arrow recalls previous commands        77
-#TOC>   2.2      Hisory tab                                88
-#TOC>   2.3      Cmd-Enter to execute selected code        93
-#TOC>   2.4      Analyzing expressions inside-out         165
-#TOC>   3        Files, and the working directory         205
-#TOC>   4        Change some code and save the change     219
-#TOC>   5        Quit, and restart where you left off     247
-#TOC>   6        Shortcuts and autocomplete               265
-#TOC>   7        Summary                                  286
-#TOC>
-#TOC> ==========================================================================
 
+#TOC> ==========================================================================
+#TOC> 
+#TOC>   Section  Title                                         Line
+#TOC> -------------------------------------------------------------
+#TOC>   1        The RStudio layout                              48
+#TOC>   2        Executing code                                  67
+#TOC>   2.1        Up-arrow recalls previous commands            75
+#TOC>   2.2        Hisory tab                                    87
+#TOC>   2.3        Cmd-Enter to execute selected code            92
+#TOC>   2.4        Analyzing expressions inside-out             165
+#TOC>   3        Files, and the working directory               208
+#TOC>   4        Change some code and save the change           222
+#TOC>   5        Quit, and restart where you left off           250
+#TOC>   6        Shortcuts and autocomplete                     268
+#TOC>   7        Summary                                        332
+#TOC> 
+#TOC> ==========================================================================
 
 
 #  BRAVA! You have successfully loaded the project file from GitHub.
@@ -299,8 +299,34 @@ abline(h = 0, col = "#E6EEFF")               # ... and horizontal line
 #     012345677789
 #
 #   - note how the insert cursor spans all three lines. You can also use this
-#     to type into several lines at once! Try this: place the cursor behinf the
+#     to type into several lines at once! Try this: place the cursor behind the
 #     three nines, then type abcdef. Hex.
+#
+#   - You can customize the keyboard layout and this makes it easy to switch
+#     between programs that you are used to without having to remember new
+#     every shortcuts every time. One thing I always change in my work is
+#     the code to move between open tabs (I usually have quite a few open).
+#     For Chrome, on the Mac the code is Alt+Cmd+Left resp. Alt+Cmd+Right to
+#     step forward resp. backwards through tabs. On Chrome for Windows it
+#     is Ctrl+PgDown resp. Ctrl+PgUp. The RStudio default is Ctrl+Tab resp.
+#     Ctrl+Shift+Tab.
+#
+#     Task:
+#     =====
+#     Open Tools > Modify Keyboard Shortcuts...
+#     Type  tab  into the Filter box.
+#     Find "Open Next Tab" and "Open Previous Tab".
+#     Click on the current key combination to edit it.
+#     Press the same keycode that works for Chrome on your computer.
+#     Click apply to save your choices.
+#
+#     Now open a few files from the  Files  pane and confirm that the
+#     new key combo works for you, forward and back.
+#
+#  -  Sometimes we want to compare files with each other, and switching tabs
+#     is not so convenient. You should know that you can undock tabs too, by
+#     dragging them out of the main RStudio window. That's very useful. Try
+#     it!
 #
 
 # =    7  Summary  =============================================================
