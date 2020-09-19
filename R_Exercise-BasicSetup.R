@@ -1,4 +1,4 @@
-# R_Exercise-BasicSetup.R
+# tocID <- "R_Exercise-BasicSetup.R"
 #
 # Purpose: Configure and verify the basic setup of R projects. Play with
 #          code.
