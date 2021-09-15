@@ -6,11 +6,12 @@
 # Note:    This project lives on Github:
 #          https://github.com/hyginn/R_Exercise-BasicSetup
 #
-# Version: 1.2
+# Version: 1.2.1
 #
 # Date:    2020  09
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.2.1  2021 - Maintenance
 # V 1.2    Maintenance, and removing files that are no longer needed
 # V 1.1    Add fast phi calculation and complex expression selection
 # V 1.0    Golden Spiral example
@@ -26,17 +27,18 @@
 #TOC> 
 #TOC>   Section  Title                                         Line
 #TOC> -------------------------------------------------------------
-#TOC>   1        The RStudio layout                              48
-#TOC>   2        Executing code                                  67
-#TOC>   2.1        Up-arrow recalls previous commands            75
-#TOC>   2.2        Hisory tab                                    87
-#TOC>   2.3        Cmd-Enter to execute selected code            92
-#TOC>   2.4        Analyzing expressions inside-out             165
-#TOC>   3        Files, and the working directory               208
-#TOC>   4        Change some code and save the change           222
-#TOC>   5        Quit, and restart where you left off           250
-#TOC>   6        Shortcuts and autocomplete                     268
-#TOC>   7        Summary                                        332
+#TOC>   1        The RStudio layout                              50
+#TOC>   2        Executing code                                  69
+#TOC>   2.1        Up-arrow recalls previous commands            77
+#TOC>   2.2        History tab                                   89
+#TOC>   2.3        Command-specific history                      94
+#TOC>   2.4        Cmd-Enter to execute selected code           102
+#TOC>   2.5        Analyzing expressions inside-out             176
+#TOC>   3        Files, and the working directory               237
+#TOC>   4        Change some code and save the change           251
+#TOC>   5        Quit, and restart where you left off           279
+#TOC>   6        Shortcuts and autocomplete                     297
+#TOC>   7        Summary                                        361
 #TOC> 
 #TOC> ==========================================================================
 
@@ -84,18 +86,27 @@
 #       [1] 1.618034
 #
 
-# ==   2.2  Hisory tab  ========================================================
+# ==   2.2  History tab  =======================================================
 # Another way to access previously typed code is through the History tab in the
 # upper-right pane. Scroll to find a line that you want to execute or edit,
 # double-click it, and it will appear in the Console. Try this.
 
-# ==   2.3  Cmd-Enter to execute selected code  ================================
+# ==   2.3  Command-specific history  ==========================================
+# Even more convenient is to type a few characters of a previous command, then
+# hit <cmd><up-arrow>. A ittle window with previous commands that begin with the
+# characters you just typed pops up and if you select one and hit <enter>, it
+# gets loaded into the command line and you can either hit enter to execute it
+# again, or edit it. This won't make a lot of sense now because you haven't
+# eneterd many commands yet - it will be quite useful later.
 
-# You can ALSO execute code by selecting and pressing <command><enter> (or
-# <ctrl><enter> on Windows). This passes code from the Script Pane to the
-# console and executes it automatically. This is very convenient - in fact, this
-# is the preferred way to work with lengthy scripts. Try this immediately: place
-# the cursor anywhere into the expression below and type <command><enter>:
+# ==   2.4  Cmd-Enter to execute selected code  ================================
+
+# You can ALSO execute code by selecting code in the Script Pane (where you are
+# readinf right now) and pressing <command><enter> (or <ctrl><enter> on
+# Windows). This passes code from the Script Pane to the console and executes it
+# automatically. This is very convenient - in fact, this is the preferred way to
+# work with lengthy scripts. Try this immediately: place the cursor anywhere
+# into the expression below and type <command><enter>:
 
 
 cat("\n  /\\_/\\\n ( o.o )\n  > ^ <\n\n")
@@ -129,7 +140,7 @@ for (i in 1:40) {
     FibCurr <- FibPrev + FibCurr          # calculate the next Fibonacci number
     FibPrev <- tmp                        # swap
 }
-print((1 + sqrt(5)) / 2, digits = 22)     # the real Golden Ratio)
+print((1 + sqrt(5)) / 2, digits = 22)     # the real Golden Ratio for comparison
 print(FibCurr)                            # the Fib_40 is pretty large
 
 # Nb. This is a slow algorithm - it adds about a digit of accuracy every 3.5
@@ -162,7 +173,7 @@ print(FibCurr)                          # Huge number, efficiently found
 # in a way that it maps to one for which an efficient algortihm is available.
 
 
-# ==   2.4  Analyzing expressions inside-out  ==================================
+# ==   2.5  Analyzing expressions inside-out  ==================================
 
 # Selecting and executing code is also really useful to analyze complex, nested
 # R expressions from the inside out. To do this, you select _less_ than
@@ -204,6 +215,24 @@ format(Sys.Date() + 1 + seq(0, length.out = 5, by = 5), "%a")
 # reading code is about. If you just gloss over such complicated expressions
 # you won't learn.
 
+# I don't always write code in such nested ways for two reasons: (1) its
+# not always obvious what happens, and code MUST be obvious or its bad code;
+# and (2) this is hard to debug if something goes wrong. Thus for course code
+# a tend more often to write the same thing as:
+
+x <- Sys.Date() + 1
+x <- x + seq(0, length.out = 5, by = 5)
+format(x, "%a")
+
+# In tnis case we can watch how x changes line by line in the Environment
+# Pane (top right) and check that what we do is correct.
+#
+#    N.b. Some people advocate using the pipe operator "%>%" from the magrittr::
+#    package (also part of the "tidyverse"). And they often write very
+#    enthusiastically about its benefits. After many years of considering it
+#    I still think this is a poor idea. If you like, we can discuss this at some
+#    point. But the idiom of using intermediate assignments to some variable
+#    x or similar is what you will encounter most frequently.
 
 # =    3  Files, and the working directory  ====================================
 
