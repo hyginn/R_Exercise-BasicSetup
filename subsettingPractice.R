@@ -2,11 +2,12 @@
 #
 # Purpose:  Practice filtering of data via R's subsetting methods
 #
-# Version: 1.2
+# Version: 1.2.1
 #
-# Date:    2020-09-18
+# Date:    2020-09 - 2021-09
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.2.1  2021 Maintenance; introducing the "sel" idiom
 # V 1.2    Maintenance and more discussion of grepl()
 # V 1.1    Update to include code in R-Exercise-BasicSetup
 # V 1.0    First code
@@ -21,18 +22,18 @@
 #TOC> 
 #TOC>   Section  Title                                               Line
 #TOC> -------------------------------------------------------------------
-#TOC>   1        REVIEW                                                46
-#TOC>   1.1        Sample data                                         49
-#TOC>   2        THE SIXFOLD PATH TO SUBSETS                           94
-#TOC>   2.1        Subsetting by index                                 96
-#TOC>   2.2        Using negative indices for subsetting              140
-#TOC>   2.3        Subsetting by boolean                              158
-#TOC>   2.4        String-matching expressions for subsetting         210
-#TOC>   2.5        Subsetting by name                                 261
-#TOC>   2.6        Using the "$" operator                             294
-#TOC>   3        APPLICATION                                          314
-#TOC>   3.1        Reading and preprocessing a dataset                316
-#TOC>   3.2        Your turn ...                                      375
+#TOC>   1        REVIEW                                                47
+#TOC>   1.1        Sample data                                         50
+#TOC>   2        THE SIXFOLD PATH TO SUBSETS                           95
+#TOC>   2.1        Subsetting by index                                 97
+#TOC>   2.2        Using negative indices for subsetting              141
+#TOC>   2.3        Subsetting by boolean                              159
+#TOC>   2.4        String-matching expressions for subsetting         211
+#TOC>   2.5        Subsetting by name                                 284
+#TOC>   2.6        Using the "$" operator                             317
+#TOC>   3        APPLICATION                                          337
+#TOC>   3.1        Reading and preprocessing a dataset                339
+#TOC>   3.2        Your turn ...                                      398
 #TOC> 
 #TOC> ==========================================================================
 
@@ -256,6 +257,28 @@ s <- "Entia non sunt multiplicanda praeter necessitatem. (Occam)"
 ( v <- unlist(strsplit(tolower(s), "")) )
 ( sel <- v %in% c("a", "e", "i", "o", "u") )
 paste(v[sel], collapse = "")
+
+# Read this carefully!
+# --------------------
+
+# This is the idiom I most frequently use for subsetting. Whatever I want to
+# select is assigned to a variable that I call "sel". This may be Booleans
+# (TRUE/FALSE), or indices of elements in a vector. Once this variable is
+# assigned, you can inspect it and see what exactly got selected If your code
+# is important, this will go a long way to help analyze and VALIDATE its
+# correctness.
+
+#     Nb: The parentheses around the expressions cause the contained value to
+#     be printed. This is not necessary for program flow, but just to show
+#     what has benn assigned to a variable. Compare:
+
+x <- exp(1)      # assignment only - nothing gets printed
+
+x <- exp(1)
+print(x)         # assign, then print, in two separate statements
+
+(x <- exp(1))    # assignment and print in one expression
+
 
 
 # ==   2.5  Subsetting by name  ================================================
