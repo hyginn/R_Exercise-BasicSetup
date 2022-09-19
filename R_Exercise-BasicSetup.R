@@ -6,7 +6,7 @@
 # Note:    This project lives on Github:
 #          https://github.com/hyginn/R_Exercise-BasicSetup
 #
-# Version: 1.2.1
+# Version: 1.2.2
 #
 # Date:    2022  09
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
@@ -21,26 +21,25 @@
 #
 # TODO:
 #
-#
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                         Line
 #TOC> -------------------------------------------------------------
 #TOC>   1        The RStudio layout                              50
 #TOC>   2        Executing code                                  69
-#TOC>   2.1        Up-arrow recalls previous commands            77
+#TOC>   2.1        Up-arrow recalls previous commands            78
 #TOC>   2.2        History tab                                   89
 #TOC>   2.3        Command-specific history                      94
 #TOC>   2.4        Cmd-Enter to execute selected code           102
-#TOC>   2.5        Analyzing expressions inside-out             176
-#TOC>   3        Files, and the working directory               237
-#TOC>   4        Change some code and save the change           251
-#TOC>   5        Quit, and restart where you left off           279
-#TOC>   6        Shortcuts and autocomplete                     297
+#TOC>   2.5        Analyzing expressions inside-out             174
+#TOC>   3        Files, and the working directory               235
+#TOC>   4        Change some code and save the change           249
+#TOC>   5        Quit, and restart where you left off           277
+#TOC>   6        Shortcuts and autocomplete                     295
 #TOC>   7        Summary                                        361
-#TOC>
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -75,8 +74,8 @@
 #  Now type: 1 + sqrt(5) / 2
 #  (This is NOT the Golden Ratio, phi)
 #
+
 # ==   2.1  Up-arrow recalls previous commands  ================================
-#
 #  To change this to the formula for the Golden Ratio, you need to use
 #  parentheses to enforce the proper operator precedence. Use the up-arrow key
 #  to get the expression back on the command-line, then use the left and right
@@ -101,7 +100,6 @@
 # entered many commands yet - it will be quite useful later.
 
 # ==   2.4  Cmd-Enter to execute selected code  ================================
-
 # You can ALSO execute code by selecting code in the Script Pane (where you are
 # readinf right now) and pressing <command><enter> (or <ctrl><enter> on
 # Windows). This passes code from the Script Pane to the console and executes it
@@ -112,10 +110,8 @@
 
 cat("\n  /\\_/\\\n ( o.o )\n  > ^ <\n\n")
 
-
 # (No, the function cat() is not specifically meant to draw images of cats!
 # Its name comes from conCATenate.)
-
 
 # There are several variants to selecting and executing code. Read this
 # carefully and try the alternatives - these three crazy tricks will change your
@@ -126,7 +122,7 @@ cat("\n  /\\_/\\\n ( o.o )\n  > ^ <\n\n")
 #    "walk" through code line by line in this way.
 #
 #  - This is the same as if you would have selected an entire line.
-
+#
 #  - If you select more than one line, you can execute an entire block of code
 #    at once. Try this: select the block of code below, (from the first
 #    assignment of FibPrev to the print() statement) and hit <command><enter>
@@ -175,9 +171,7 @@ print(FibCurr)                          # Huge number, efficiently found
 # in a way that it maps to a problem for which an efficient algorithm is
 # available.
 
-
 # ==   2.5  Analyzing expressions inside-out  ==================================
-
 # Selecting and executing code is also really useful to analyze complex, nested
 # R expressions from the inside out. To do this, you select _less_ than
 # one line of code.
@@ -237,8 +231,9 @@ format(x, "%a")
 #    point. But the idiom of using intermediate assignments to some variable
 #    x or similar is what you will encounter most frequently in this course.
 
-# =    3  Files, and the working directory  ====================================
 
+# =    3  Files, and the working directory  ====================================
+#
 # We need to make sure the working directory is set correctly. Execute
 list.files()
 # ... to get a list of files in the current working directory.
@@ -252,7 +247,7 @@ list.files()
 #
 
 # =    4  Change some code and save the change  ================================
-
+#
 # Here is a bit of code that plots 1.5 turns of the Golden Spiral. Don't worry
 # if you don't understand the details - that's not the point right now. Execute
 # the code.
@@ -280,7 +275,7 @@ abline(h = 0, col = "#E6EEFF")               # ... and horizontal line
 
 
 # =    5  Quit, and restart where you left off  ================================
-
+#
 # Finally, we'll quit RStudio and restart the project. It should be obvious how
 # to quit. But here's how to reload a project.
 
@@ -364,18 +359,18 @@ abline(h = 0, col = "#E6EEFF")               # ... and horizontal line
 #
 
 # =    7  Summary  =============================================================
-
-# Summary: - The layout of the Panes
-#          - Typing code
-#          - Editing code in the Console, using the arrow keys
-#          - Retrieving code via the History tab
-#          - Selecting code in the Script Pane and executing it
-#            with <command><enter>
-#          - analyzing R expressions by selecting and executing parts
-#          - Setting the Working Directory
-#          - Editing code in the script and saving the change
-#          - Quitting RStudio and restarting a recent project.
-#          - Some amazingly useful typing and selecting shortcuts
+#
+# Summary:  - The layout of the Panes
+#           - Typing code
+#           - Editing code in the Console, using the arrow keys
+#           - Retrieving code via the History tab
+#           - Selecting code in the Script Pane and executing it
+#             with <command><enter>
+#           - Analyzing R expressions by selecting and executing parts
+#           - Setting the Working Directory
+#           - Editing code in the script and saving the change
+#           - Quitting RStudio and restarting a recent project.
+#           - Some amazingly useful typing and selecting shortcuts
 
 
 # [END]
