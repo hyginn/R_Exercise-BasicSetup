@@ -24,7 +24,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                         Line
 #TOC> -------------------------------------------------------------
 #TOC>   1        The RStudio layout                              50
@@ -39,7 +39,7 @@
 #TOC>   5        Quit, and restart where you left off           277
 #TOC>   6        Shortcuts and autocomplete                     295
 #TOC>   7        Summary                                        361
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -133,7 +133,7 @@ FibPrev <- 1L    # assign integer 1
 FibCurr <- 1L
 for (i in 1:40) {
     print(FibCurr / FibPrev, digits = 22) # approximate phi as the ratio of
-                                          # two successive Fibonacci numbers
+    # two successive Fibonacci numbers
     tmp <- FibCurr
     FibCurr <- FibPrev + FibCurr          # calculate the next Fibonacci number
     FibPrev <- tmp                        # swap
