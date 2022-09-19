@@ -8,9 +8,10 @@
 #
 # Version: 1.2.1
 #
-# Date:    2020  09
+# Date:    2022  09
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.2.2  2022 - Maintenance
 # V 1.2.1  2021 - Maintenance
 # V 1.2    Maintenance, and removing files that are no longer needed
 # V 1.1    Add fast phi calculation and complex expression selection
@@ -24,7 +25,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                         Line
 #TOC> -------------------------------------------------------------
 #TOC>   1        The RStudio layout                              50
@@ -39,7 +40,7 @@
 #TOC>   5        Quit, and restart where you left off           279
 #TOC>   6        Shortcuts and autocomplete                     297
 #TOC>   7        Summary                                        361
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -93,11 +94,11 @@
 
 # ==   2.3  Command-specific history  ==========================================
 # Even more convenient is to type a few characters of a previous command, then
-# hit <cmd><up-arrow>. A ittle window with previous commands that begin with the
-# characters you just typed pops up and if you select one and hit <enter>, it
-# gets loaded into the command line and you can either hit enter to execute it
-# again, or edit it. This won't make a lot of sense now because you haven't
-# eneterd many commands yet - it will be quite useful later.
+# hit <cmd><up-arrow>. A little window with previous commands that begin with
+# the characters you just typed pops up and if you select one and hit <enter>,
+# it gets loaded into the command line and you can either hit enter to execute
+# it again, or edit it. This won't make a lot of sense now because you haven't
+# entered many commands yet - it will be quite useful later.
 
 # ==   2.4  Cmd-Enter to execute selected code  ================================
 
@@ -117,12 +118,13 @@ cat("\n  /\\_/\\\n ( o.o )\n  > ^ <\n\n")
 
 
 # There are several variants to selecting and executing code. Read this
-# carefully and try the alternatives - these crazy tricks will change your
-# life. Number four will leave you speechless:
+# carefully and try the alternatives - these three crazy tricks will change your
+# life:
 
 #  - When nothing is selected in the Script Pane, pressing <command><enter> will
 #    execute the current line and move the cursor to the next line. You can
 #    "walk" through code line by line in this way.
+#
 #  - This is the same as if you would have selected an entire line.
 
 #  - If you select more than one line, you can execute an entire block of code
@@ -168,9 +170,10 @@ print(FibCurr)                          # Huge number, efficiently found
 # experimenting with alternatives (for example you could install the Rmpfr
 # package for arbitrarily accurate computations, and calculate phi to 100 digits
 # accuracy), and (iii) understand that efficient algorithms can be _very_ much
-# faster than naive approaches to calculate. Often whether something can be
-# practically calculated at all, depends on whether you can approach the problem
-# in a way that it maps to one for which an efficient algortihm is available.
+# faster than naive approaches to calculate. Often, whether something can be
+# practically calculated at all depends on whether you can approach the problem
+# in a way that it maps to a problem for which an efficient algorithm is
+# available.
 
 
 # ==   2.5  Analyzing expressions inside-out  ==================================
@@ -216,15 +219,15 @@ format(Sys.Date() + 1 + seq(0, length.out = 5, by = 5), "%a")
 # you won't learn.
 
 # I don't always write code in such nested ways for two reasons: (1) its
-# not always obvious what happens, and code MUST be obvious or its bad code;
+# not always obvious what happens, and code MUST be obvious or it is bad code;
 # and (2) this is hard to debug if something goes wrong. Thus for course code
-# a tend more often to write the same thing as:
+# I tend more often to write the same thing as:
 
 x <- Sys.Date() + 1
 x <- x + seq(0, length.out = 5, by = 5)
 format(x, "%a")
 
-# In tnis case we can watch how x changes line by line in the Environment
+# In this case we can watch how x changes line by line in the Environment
 # Pane (top right) and check that what we do is correct.
 #
 #    N.b. Some people advocate using the pipe operator "%>%" from the magrittr::
@@ -232,7 +235,7 @@ format(x, "%a")
 #    enthusiastically about its benefits. After many years of considering it
 #    I still think this is a poor idea. If you like, we can discuss this at some
 #    point. But the idiom of using intermediate assignments to some variable
-#    x or similar is what you will encounter most frequently.
+#    x or similar is what you will encounter most frequently in this course.
 
 # =    3  Files, and the working directory  ====================================
 
@@ -300,9 +303,11 @@ abline(h = 0, col = "#E6EEFF")               # ... and horizontal line
 # coding. Try them.
 #
 #   - Typing an opening parenthesis automatically types the closing parenthesis.
+#
 #   - Selecting text and typing a quotation mark quotes the selected text.
+#
 #   - Both bracketing and quoting of selected code work with single- and
-#   - double quotation marks, parentheses, square brackets and curly braces.
+#     double quotation marks, parentheses, square brackets and curly braces.
 #
 #   - Typing a newline character automatically indents the following line.
 #
