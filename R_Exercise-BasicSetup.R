@@ -8,7 +8,7 @@
 #
 # Version: 1.2.2
 #
-# Date:    2022  09
+# Date:    2016-12  -  2022-10
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
 # V 1.2.2  2022 - Maintenance
@@ -101,7 +101,7 @@
 
 # ==   2.4  Cmd-Enter to execute selected code  ================================
 # You can ALSO execute code by selecting code in the Script Pane (where you are
-# readinf right now) and pressing <command><enter> (or <ctrl><enter> on
+# reading right now) and pressing <command><enter> (or <ctrl><enter> on
 # Windows). This passes code from the Script Pane to the console and executes it
 # automatically. This is very convenient - in fact, this is the preferred way to
 # work with lengthy scripts. Try this immediately: place the cursor anywhere
@@ -159,7 +159,7 @@ for (i in 1:7) {
     FibCurr <- Fk^2 + Fk1^2           # calculate F_2k+1
 }
 print((1 + sqrt(5)) / 2, digits = 22)   # The real Golden Ratio (approximately)
-print(FibCurr)                          # Huge number, efficiently found
+print(FibCurr, digits = 22)             # Huge number, efficiently found
 
 
 # This is just playing with numbers (i) for you to practice reading code, (ii)
@@ -271,7 +271,7 @@ abline(h = 0, col = "#E6EEFF")               # ... and horizontal line
 # Execute the modified block of code. The number of the turns increases.
 
 # Now save the change. The filename changes to black again. The Modified date
-# of the script in the Files Pane is now today's date.
+# and time of the script in the Files Pane is _now_.
 
 
 # =    5  Quit, and restart where you left off  ================================
@@ -281,7 +281,7 @@ abline(h = 0, col = "#E6EEFF")               # ... and horizontal line
 
 # Choose: File -> Recent Projects -> <the project you need>
 
-# Note: Take care to choose the "Recent Projects" menu option,
+# Note: Be sure to choose the "Recent Projects" menu option,
 #       not "Recent Files".
 
 # Try this out, use the File -> Quit Session... option to quit - and if you are
